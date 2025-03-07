@@ -1,0 +1,37 @@
+version: '3'
+services:
+  db:
+    image: mysql:8
+    container_name: task_db
+    environment:
+      MYSQL_DATABASE: pruebaPedidos
+      MYSQL_USER: user
+      MYSQL_PASSWORD: pass
+      MYSQL_ROOT_PASSWORD: root
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+
+  backend:
+    build: ./backend
+    container_name: task_backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/pruebaPedidos?useSSL=false&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: ''
+
+  frontend:
+    build: ./frontend
+    container_name: task_frontend
+    ports:
+      - "4200:80"  # O el puerto que prefieras en tu host
+    depends_on:
+      - backend
+
+volumes:
+  db_data:
